@@ -1,14 +1,20 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthenticatedRequest } from '../types/authenticated-request-type';
 import * as userCourseService from '../services/user-course-service';
 
-export const enroll = async (req: Request, res: Response) => {
+export const enroll = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { user_id, course_id } = req.body;
+    let { user_id, course_id } = req.body;
+
+    // Jika user adalah student, pakai ID dari token
+    if (req.user.role === 'student') {
+      user_id = req.user.id;
+    }
 
     if (!user_id || !course_id) {
       return res.status(400).json({
         statusCode: 400,
-        message: 'user_id dan course_id wajib diisi!'
+        message: 'course_id wajib diisi! (user_id opsional, otomatis untuk student)'
       });
     }
 
