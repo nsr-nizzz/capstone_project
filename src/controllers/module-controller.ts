@@ -42,13 +42,21 @@ exports.show = async (req: Request, res: Response) => {
   }
 };
 
-// Tambah modul
+// Tambah modul baru
 exports.create = async (req: Request, res: Response) => {
   try {
     const { courseSlug } = req.params;
-    const newModule = await moduleService.addModule(courseSlug, req.body);
+    const data = req.body;
+    const files: any = req.files;
+    data.files = files;
 
-    return res.status(201).json({ statusCode: 201, message: 'Berhasil menambahkan modul', data: newModule });
+    const newModule = await moduleService.addModule(courseSlug, data);
+
+    return res.status(201).json({
+      statusCode: 201,
+      message: 'Berhasil menambahkan modul',
+      data: newModule
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ statusCode: 500, message: 'Error internal server!' });
@@ -59,13 +67,21 @@ exports.create = async (req: Request, res: Response) => {
 exports.update = async (req: Request, res: Response) => {
   try {
     const { courseSlug, moduleSlug } = req.params;
-    const updatedModule = await moduleService.updateModule(courseSlug, moduleSlug, req.body);
+    const data = req.body;
+    const files: any = req.files;
+    data.files = files;
+
+    const updatedModule = await moduleService.updateModule(courseSlug, moduleSlug, data);
 
     if (!updatedModule) {
       return res.status(404).json({ statusCode: 404, message: 'Modul tidak ditemukan' });
     }
 
-    return res.status(200).json({ statusCode: 200, message: 'Berhasil update modul', data: updatedModule });
+    return res.status(200).json({
+      statusCode: 200,
+      message: 'Berhasil update modul',
+      data: updatedModule
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ statusCode: 500, message: 'Error internal server!' });
